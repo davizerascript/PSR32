@@ -28,10 +28,20 @@ else
     ESUDO="${ESUDO-sudo}"
     sdl_controllerconfig="${SDL_GAMECONTROLLERCONFIG:-}"
 fi
+# Some control.txt files do not export ESUDO. Keep a safe default without
+# converting an intentionally empty ESUDO into the literal command `sudo`.
+ESUDO="${ESUDO-sudo}"
 
 ROM="${1:-}"
 if [ -z "$ROM" ]; then
-    echo "Port PS2-RK3326: use este port pelo sistema PlayStation 2." >&2
+    # A direct click on the visible launcher is common on dArkOS. Make that
+    # click useful instead of exiting with no visible action: run the local
+    # installer, which creates the PS2 system entry. Game launches pass ROM.
+    INSTALLER="$SCRIPT_DIR/Install PS2 RK3326.sh"
+    if [ -x "$INSTALLER" ]; then
+        exec "$INSTALLER"
+    fi
+    echo "Port PS2-RK3326: selecione um jogo na categoria PlayStation 2." >&2
     echo "Coloque imagens ISO, CHD ou CSO em /roms/ps2." >&2
     exit 1
 fi
@@ -113,5 +123,7 @@ fi
 if declare -F pm_finish >/dev/null 2>&1; then
     pm_finish
 fi
-printf '\033c' >/dev/tty1 2>/dev/null || true
+if [ -w /dev/tty1 ]; then
+    printf '\033c' >/dev/tty1 || true
+fi
 exit 0

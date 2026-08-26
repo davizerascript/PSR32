@@ -8,13 +8,13 @@ O projeto não redistribui jogos, imagens de disco, BIOS proprietária ou firmwa
 
 Baixe `ps2-rk3326.zip` na página **Releases** deste repositório usando um computador ou celular. Depois copie o ZIP para o cartão microSD do R36S/R36H. O R36S não precisa ter Wi-Fi, conta PortMaster ou conexão de rede para instalar e executar este port.
 
-Extraia o conteúdo do ZIP no cartão mantendo a pasta do port em `/roms/ports/ps2rk3326/`. O PortMaster é apenas uma forma opcional de organizar ports; este pacote também pode ser instalado manualmente por cópia no cartão.
+Extraia o conteúdo do ZIP diretamente em `/roms/ports/` no cartão. Os arquivos `PS2-RK3326.sh` e `Install PS2 RK3326.sh` precisam ficar diretamente dentro de `/roms/ports/`; mantenha a subpasta `ps2rk3326/` ao lado deles. Não coloque os dois scripts dentro de uma segunda pasta, porque o EmulationStation do dArkOS procura os scripts de Ports nesse nível. O PortMaster é apenas uma forma opcional de organizar ports; este pacote também pode ser instalado manualmente por cópia no cartão.
 
 Depois, coloque suas próprias imagens de jogos legalmente obtidas em `/roms/ps2`. O launcher aceita `.iso`, `.chd`, `.cso` e `.cue/.bin`.
 
 ## Instalação com um clique no menu
 
-Com o pacote extraído em `/roms/ports/ps2rk3326/`, abra **Ports** no menu principal e clique em **Install PS2 RK3326.sh**. Esse único arquivo SH executa localmente o instalador, cria `/roms/ps2`, faz backup de `/etc/emulationstation/es_systems.cfg`, adiciona a categoria **PlayStation 2** e reinicia o EmulationStation. Não é necessário SSH, Wi-Fi, conta do PortMaster ou download durante esse processo.
+Com os dois scripts diretamente em `/roms/ports/`, abra **Ports** no menu principal e clique em **Install PS2 RK3326.sh**. Esse único arquivo SH executa localmente o instalador, cria `/roms/ps2`, faz backup de `/etc/emulationstation/es_systems.cfg`, adiciona a categoria **PlayStation 2** e reinicia o EmulationStation. Não é necessário SSH, Wi-Fi, conta do PortMaster ou download durante esse processo.
 
 Depois do reinício, as imagens em `/roms/ps2` aparecerão na categoria **PlayStation 2**. Ao clicar em uma imagem, o EmulationStation passará o caminho dela ao `PS2-RK3326.sh`, que abrirá o retrorun/RetroArch já carregando o jogo diretamente.
 

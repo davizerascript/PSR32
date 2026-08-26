@@ -2,7 +2,7 @@
 set -u
 SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
 INSTALLER="$SCRIPT_DIR/ps2rk3326/install_ps2_system.sh"
-ESUDO="${ESUDO-sudo}"
+export ESUDO="${ESUDO-sudo}"
 
 if [ ! -x "$INSTALLER" ]; then
     chmod +x "$INSTALLER" 2>/dev/null || true
