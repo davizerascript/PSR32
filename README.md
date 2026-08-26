@@ -38,7 +38,7 @@ O core usa o padrão libretro de controle compatível com DualShock 2: direciona
 
 ## Revisão atual e diagnóstico da tela preta
 
-O core da revisão atual foi recompilado para requisitar **OpenGL ES 3.1** (em vez de 3.2) ao frontend libretro. Essa mudança é direcionada ao perfil Mali-G31/RK3326, no qual a disponibilidade de GLES 3.1 é uma expectativa mais conservadora; os shaders do core já usam GLSL ES 3.00. O binário anterior foi observado no teste com Need for Speed Underground 2 ficando aproximadamente nove segundos em tela preta e retornando ao menu. A revisão atual é uma tentativa técnica de corrigir a inicialização do contexto; **não há afirmação de que NFSU2 esteja compatível ou rápido**.
+O core da revisão atual foi recompilado para negociar **OpenGL ES 3.1** com o enum libretro versionado `RETRO_HW_CONTEXT_OPENGLES_VERSION` (em vez do enum fixo `RETRO_HW_CONTEXT_OPENGLES3`, que representa GLES 3.0). A mudança é direcionada ao perfil Mali-G31/RK3326, no qual a disponibilidade de GLES 3.1 é uma expectativa mais conservadora; os shaders do core já usam GLSL ES 3.00. O binário anterior foi observado no teste com Need for Speed Underground 2 ficando aproximadamente nove segundos em tela preta e retornando ao menu. A revisão atual é uma tentativa técnica de corrigir a inicialização do contexto; **não há afirmação de que NFSU2 esteja compatível ou rápido**.
 
 O perfil inicial usa resolução interna 1×, OpenGL ES 3.1 e apresentação ajustada à tela do portátil. O R36S/R36H não é uma plataforma oficialmente suportada pelo emulador upstream. Jogos 3D pesados podem apresentar lentidão, glitches gráficos, áudio irregular ou não iniciar; não existe promessa de taxa de quadros.
 

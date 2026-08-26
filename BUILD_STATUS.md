@@ -1,7 +1,7 @@
 # Status do port PS2-RK3326
 
 **Data:** 26 de agosto de 2026  
-**Status:** experimental; compilado, auditado estaticamente e com smoke test de carregamento AArch64 repetido após a revisão GLES 3.1; ainda sem validação em um R36S/R36H físico.
+**Status:** experimental; compilado, auditado estaticamente e com smoke test de carregamento AArch64 repetido após a revisão de negociação GLES 3.1; ainda sem validação em um R36S/R36H físico.
 
 ## O que foi concluído
 
@@ -14,7 +14,7 @@ A categoria dedicada **PlayStation 2** é opcional. O instalador cria um backup 
 | Teste | Resultado |
 |---|---:|
 | Compilação cruzada AArch64/Cortex-A35/ARMv8-A | OK |
-| Carregamento do core via QEMU AArch64 após a revisão GLES 3.1 | OK — `name=Play!`, `04bde0d`, `need_fullpath=1` |
+| Carregamento do core via QEMU AArch64 após a revisão GLES 3.1 | OK — `name=Play!`, `04bde0d`, `need_fullpath=1`; BuildID `c4eac244353c18a64b9e9b577c281317056b0dd5` |
 | Exports `retro_init`, `retro_run`, `retro_load_game` | OK |
 | Manifesto JSON, metadados XML e shell scripts | OK |
 | Launcher com retrorun e fallback RetroArch simulados | OK |
@@ -37,6 +37,6 @@ Após um relato de clique sem abertura, o launcher foi corrigido para suportar d
 
 ## Limitações importantes
 
-A compilação passou no host e o carregamento do core passou no QEMU. Um frontend host criou EGL/GLES 3.2 Mesa e conseguiu `retro_load_game`, mas não completou um `retro_run` do ELF homebrew no sandbox; esse resultado não é usado como prova de funcionamento do jogo e não substitui o R36. O contexto OpenGL ES real do Mali-G31, a versão da glibc, o comportamento do retrorun, o áudio, o mapeamento físico e o desempenho de jogos 3D ainda precisam ser medidos. Não há promessa de 30 ou 60 FPS. O relato de NFSU2 continua pendente de `ps2rk3326/log.txt` da nova revisão.
+A compilação passou no host e o carregamento do core passou no QEMU. Um frontend host criou EGL/GLES Mesa e conseguiu `retro_load_game`, mas não completou um `retro_run` do ELF homebrew no sandbox; esse resultado não é usado como prova de funcionamento do jogo e não substitui o R36. A comparação com o cabeçalho oficial libretro também corrigiu o enum: `RETRO_HW_CONTEXT_OPENGLES_VERSION` é usado para negociar explicitamente GLES 3.1; `RETRO_HW_CONTEXT_OPENGLES3` é o enum fixo de GLES 3.0. O contexto OpenGL ES real do Mali-G31, a versão da glibc, o comportamento do retrorun, o áudio, o mapeamento físico e o desempenho de jogos 3D ainda precisam ser medidos. Não há promessa de 30 ou 60 FPS. O relato de NFSU2 continua pendente de `ps2rk3326/log.txt` da nova revisão.
 
 O código-fonte upstream e todos os avisos de terceiros estão documentados em [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) e em [`LICENSES/`](LICENSES/).

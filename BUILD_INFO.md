@@ -10,9 +10,9 @@ O binário é baseado na revisão `04bde0df87ee7c0e2f0151b51bb2cc22c88541da` do 
 
 ## Adaptações do port
 
-O Framework OpenGL foi ajustado para tratar `TARGET_PLATFORM_UNIX_AARCH64` como caminho GLES. O core libretro foi ligado contra o nome de biblioteca `libGLESv2.so.2` e, nesta revisão, solicita explicitamente contexto **OpenGL ES 3.1** (`version_major=3`, `version_minor=1`) em tempo de execução. A implementação concreta de EGL/GLES é fornecida pelo dArkOS. O BuildID ELF desta revisão é `f810d736096a49693ff960f649a521791eb6b67f`.
+O Framework OpenGL foi ajustado para tratar `TARGET_PLATFORM_UNIX_AARCH64` como caminho GLES. O core libretro foi ligado contra o nome de biblioteca `libGLESv2.so.2` e, nesta revisão, solicita explicitamente contexto **OpenGL ES 3.1** (`version_major=3`, `version_minor=1`) usando `RETRO_HW_CONTEXT_OPENGLES_VERSION`; o enum `RETRO_HW_CONTEXT_OPENGLES3` representa GLES 3.0 fixo. A implementação concreta de EGL/GLES é fornecida pelo dArkOS. O BuildID ELF desta revisão é `c4eac244353c18a64b9e9b577c281317056b0dd5`.
 
-Foram adicionados shims locais para os símbolos C23 `__isoc23_*` gerados pelo toolchain Ubuntu 24.04. O binário ainda deve ser verificado contra a glibc da imagem dArkOS real. A compilação cruzada e o smoke test de carregamento via QEMU passaram após a alteração GLES 3.1. Um teste adicional com Mesa host criou EGL/GLES e completou `retro_load_game` para um ELF homebrew MIT, mas não completou um `retro_run`; esse harness não é evidência de compatibilidade de jogos e o ambiente de teste não possui KMS/DRM, GPU Mali-G31, áudio Rockchip ou controles físicos.
+Foram adicionados shims locais para os símbolos C23 `__isoc23_*` gerados pelo toolchain Ubuntu 24.04. O binário ainda deve ser verificado contra a glibc da imagem dArkOS real. A compilação cruzada e o smoke test de carregamento via QEMU passaram após a alteração de negociação GLES 3.1. Um teste adicional com Mesa host criou EGL/GLES e completou `retro_load_game` para um ELF homebrew MIT, mas não completou um `retro_run`; esse harness não é evidência de compatibilidade de jogos e o ambiente de teste não possui KMS/DRM, GPU Mali-G31, áudio Rockchip ou controles físicos.
 
 ## Validação
 
