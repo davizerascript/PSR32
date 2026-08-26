@@ -32,7 +32,7 @@ Não é necessário copiar uma BIOS externa: o código-fonte upstream utilizado 
 
 A estrutura foi comparada diretamente com o snapshot `03082026` do projeto [dArkOSRE-R36](https://github.com/southoz/dArkOSRE-R36). O menu Ports usa scripts `.sh` em `/roms/ports`; os wrappers oficiais para cores 64-bit chamam `/usr/local/bin/retrorun` com `/home/ark/.config/retrorun.cfg`; e o RetroArch 64-bit auditado usa `video_driver = "gl"`, `input_driver = "udev"`, áudio `alsathread` e viewport 640×480.
 
-O launcher segue esse fluxo, exporta `SDL_VIDEO_EGL_DRIVER=libEGL.so`, preserva `ESUDO` e reconhece os perfis DTB comuns do RK3326/R36. O checkout do dArkOS não contém o binário retrorun nem as bibliotecas EGL/GLES da imagem final. Por isso, a interface está alinhada ao sistema, mas o carregamento final ainda deve ser confirmado no aparelho real, principalmente pela glibc e pelo contexto OpenGL ES 3.
+O launcher segue esse fluxo, exporta `SDL_VIDEO_EGL_DRIVER=libEGL.so`, reconhece os perfis DTB comuns do RK3326/R36 e deixa o retrorun/RetroArch escolher o backend SDL do firmware. A entrada PS2 gerada pelo instalador usa a mesma moldura oficial `sudo perfmax %GOVERNOR% %ROM%; nice -n -19 ...; sudo perfnorm`; o launcher não força `SDL_VIDEODRIVER`, KMSDRM, VSync ou uma placa DRM específica. O checkout do dArkOS não contém o binário retrorun nem as bibliotecas EGL/GLES da imagem final. Por isso, a interface está alinhada ao sistema, mas o carregamento final ainda deve ser confirmado no aparelho real, principalmente pela glibc e pelo contexto OpenGL ES 3.
 
 ## Controles
 
@@ -46,7 +46,7 @@ O perfil inicial usa resolução interna 1×, OpenGL ES 3.1 e apresentação aju
 
 O sandbox confirmou a compilação ARM64, o carregamento de metadados do core via QEMU, a criação de um contexto EGL/GLES host para o teste de carregamento e os exports libretro, além do launcher e do instalador XML. Isso não substitui o teste no aparelho físico: ainda não foram medidos no R36S/R36H FPS, frame pacing, áudio, temperatura, RAM, hotkeys, save states, compatibilidade de ISO/CHD ou desempenho 3D.
 
-Se o jogo ainda retornar ao menu, abra **Ports** novamente e copie o arquivo `/roms/ports/ps2rk3326/log.txt` do cartão para um computador ou celular. O launcher agora registra a arquitetura, o caminho e o tamanho da ROM, o core, as dependências ELF detectáveis, os drivers SDL relevantes e `emulator_exit_status`; esse arquivo é indispensável para distinguir falha de glibc, biblioteca/contexto GLES, retrorun ou boot do jogo.
+Se o jogo ainda retornar ao menu, abra **Ports** novamente e copie o arquivo `/roms/ports/ps2rk3326/log.txt` do cartão para um computador ou celular. O launcher agora registra a arquitetura, o caminho e o tamanho da ROM, o core, as dependências ELF detectáveis, as variáveis SDL disponíveis e `emulator_exit_status`; esse arquivo é indispensável para distinguir falha de glibc, biblioteca/contexto GLES, retrorun ou boot do jogo. Se `log.txt` não existir, copie também `/roms/ports/ps2rk3326/install.log`: ele mostra se o instalador foi executado, qual `es_systems.cfg` ele tentou alterar e qual foi seu código de saída.
 
 ## Conteúdo
 

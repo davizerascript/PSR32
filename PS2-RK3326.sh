@@ -5,7 +5,21 @@ XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
 SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
 PORTDIR="$SCRIPT_DIR/ps2rk3326"
 CONFDIR="$PORTDIR/conf"
+LOGFILE="$PORTDIR/log.txt"
 mkdir -p "$CONFDIR"
+# Start diagnostics before checking the ROM. This captures a bad or empty
+# %ROM% expansion, which otherwise returned before the old log was created.
+if : > "$LOGFILE" 2>/dev/null; then
+    exec >>"$LOGFILE" 2>&1
+    printf '%s\n' '--- PS2-RK3326 launcher invoked ---'
+    printf 'launcher_pid=%s\n' "$$"
+    printf 'launcher_script=%s\n' "$0"
+    printf 'launcher_dir=%s\n' "$SCRIPT_DIR"
+    printf 'argc=%s\n' "$#"
+    printf 'rom_arg=%s\n' "${1-}"
+    if command -v date >/dev/null 2>&1; then date '+launcher_invoked=%Y-%m-%dT%H:%M:%S%z' || true; fi
+    if command -v pwd >/dev/null 2>&1; then printf 'cwd=%s\n' "$(pwd)"; fi
+fi
 
 # Locate PortMaster's shared control helpers.
 if [ -d "/opt/system/Tools/PortMaster" ]; then
@@ -25,18 +39,17 @@ if [ -f "$controlfolder/control.txt" ]; then
     [ -f "$controlfolder/mod_${CFW_NAME:-}.txt" ] && source "$controlfolder/mod_${CFW_NAME:-}.txt"
     get_controls 2>/dev/null || true
 else
-    ESUDO="${ESUDO-sudo}"
+    # The dArkOS wrappers run the emulator as the normal user. The outer
+    # EmulationStation command already handles perfmax/perfnorm privileges;
+    # sudo here would strip DEVICE_NAME, SDL and XDG variables.
+    ESUDO="${ESUDO-}"
     sdl_controllerconfig="${SDL_GAMECONTROLLERCONFIG:-}"
 fi
-# Some control.txt files do not export ESUDO. Use no privilege wrapper when
-# dArkOS already launched this script as root, while preserving an intentional
-# empty ESUDO for offline tests and PortMaster environments.
+# Keep the emulator invocation unprivileged unless a PortMaster control file
+# explicitly supplies an intentional wrapper (for example, a preserved-env
+# sudo on a special device). This matches dArkOS's dreamcast.sh convention.
 if [ -z "${ESUDO+x}" ]; then
-    if [ "$(id -u)" -eq 0 ]; then
-        ESUDO=""
-    else
-        ESUDO="sudo"
-    fi
+    ESUDO=""
 fi
 
 ROM="${1:-}"
@@ -68,16 +81,12 @@ export XDG_CACHE_HOME="$CONFDIR/cache"
 mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$XDG_CACHE_HOME"
 
 export SDL_GAMECONTROLLERCONFIG="${sdl_controllerconfig:-${SDL_GAMECONTROLLERCONFIG:-}}"
+# Match dArkOS perfmax: select its system EGL library, but do not force an
+# SDL video backend. retrorun/RetroArch choose the backend for the firmware.
+export SDL_VIDEO_EGL_DRIVER=libEGL.so
 export SDL_AUDIODRIVER="${SDL_AUDIODRIVER:-alsa}"
-export SDL_VIDEODRIVER="${SDL_VIDEODRIVER:-kmsdrm}"
-export SDL_VIDEO_KMSDRM_DOUBLE_BUFFER=1
-export SDL_VIDEO_KMSDRM_CARD_INDEX=0
-# dArkOS perfmax/perfnorm select the system EGL implementation this way.
-export SDL_VIDEO_EGL_DRIVER="${SDL_VIDEO_EGL_DRIVER:-libEGL.so}"
-export SDL_JOYSTICK_HIDAPI=0
-export SDL_JOYSTICK_DEADZONE=12000
-export vblank_mode=0
-export SDL_RENDER_VSYNC=0
+# Do not override KMSDRM card, double-buffer, VSync or joystick backend here;
+# those are firmware/frontend decisions and differ between R36 revisions.
 export PLAY_RES_FACTOR="${PLAY_RES_FACTOR:-1}"
 
 # Match the device profile used by dArkOS retrorun wrappers. Preserve a value
@@ -103,24 +112,15 @@ fi
 # device's KMS/DRM setup, hotkeys, save paths and audio behavior. The fallback
 # is useful on dArkOS variants where retrorun is not installed.
 RETRORUN_BIN="${PLAY_RETRORUN-/usr/local/bin/retrorun}"
-LOGFILE="$PORTDIR/log.txt"
-: > "$LOGFILE"
-# Redirect directly to the SD-card log. This avoids a background `tee` process
-# and keeps diagnostics available even when the emulator returns to ES.
-exec >>"$LOGFILE" 2>&1
-printf '%s\n' '--- PS2-RK3326 launcher ---'
-if command -v date >/dev/null 2>&1; then date '+launcher_started=%Y-%m-%dT%H:%M:%S%z' || true; fi
 if command -v uname >/dev/null 2>&1; then uname -a || true; fi
-printf 'launcher_pid=%s\n' "$$"
-printf 'launcher_dir=%s\n' "$SCRIPT_DIR"
 printf 'rom_path=%s\n' "$ROM"
 if command -v stat >/dev/null 2>&1; then stat -c 'rom_size_bytes=%s' "$ROM" 2>/dev/null || true; fi
 printf 'core_path=%s\n' "$PORTDIR/ps2rk3326_libretro.so"
 printf 'retrorun_path=%s\n' "$RETRORUN_BIN"
 printf 'esudo=%s\n' "${ESUDO:-}"
 printf 'xdg_config_home=%s\n' "$XDG_CONFIG_HOME"
-printf 'sdl_videodriver=%s\n' "$SDL_VIDEODRIVER"
-printf 'sdl_video_egl_driver=%s\n' "$SDL_VIDEO_EGL_DRIVER"
+printf 'sdl_videodriver=%s\n' "${SDL_VIDEODRIVER:-}"
+printf 'sdl_video_egl_driver=%s\n' "${SDL_VIDEO_EGL_DRIVER:-}"
 if command -v file >/dev/null 2>&1; then
     file "$PORTDIR/ps2rk3326_libretro.so" 2>/dev/null || true
     [ -e "$RETRORUN_BIN" ] && file "$RETRORUN_BIN" 2>/dev/null || true

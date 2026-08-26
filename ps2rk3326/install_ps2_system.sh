@@ -8,9 +8,19 @@ ROMDIR="${PLAY_ROMDIR:-/roms/ps2}"
 SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
 LAUNCHER="$SCRIPT_DIR/../PS2-RK3326.sh"
 ESUDO="${ESUDO-sudo}"
+INSTALL_LOG="$SCRIPT_DIR/install.log"
+install_log() { printf '%s\n' "$*" >> "$INSTALL_LOG" 2>/dev/null || true; }
+install_log '--- PS2-RK3326 installer invoked ---'
+install_log "installer_script=$0"
+install_log "installer_dir=$SCRIPT_DIR"
+install_log "es_cfg=$ESCFG"
+install_log "rom_dir=$ROMDIR"
 
 if [ ! -f "$ESCFG" ]; then
+    install_log 'error=es_cfg_missing'
+
     echo "Arquivo do EmulationStation não encontrado: $ESCFG" >&2
+    install_log 'installer_exit=1'
     exit 1
 fi
 if [ ! -x "$LAUNCHER" ]; then
@@ -30,7 +40,7 @@ cat > "$TMP" <<EOF
     <fullname>PlayStation 2</fullname>
     <path>$ROMDIR</path>
     <extension>.iso .ISO .chd .CHD .cso .CSO .cue .CUE .bin .BIN .elf .ELF</extension>
-    <command>$LAUNCHER &quot;%ROM%&quot;</command>
+    <command>sudo perfmax %GOVERNOR% %ROM%; nice -n -19 $LAUNCHER &quot;%ROM%&quot;; sudo perfnorm</command>
     <platform>ps2</platform>
     <theme>ps2</theme>
   </system>
@@ -56,12 +66,16 @@ END { if (!is_ps2) print 0 }
 if [ "$PS2_STATUS" = "2" ]; then
     mkdir -p "$ROMDIR" 2>/dev/null || true
     echo "O sistema ps2 já está instalado e já aceita ELF em $ESCFG"
+    install_log 'action=already_current'
+    install_log 'installer_exit=0'
     exit 0
 fi
 
 BACKUP="$ESCFG.ps2rk3326.bak.$(date +%Y%m%d-%H%M%S)"
 if ! $ESUDO cp -a "$ESCFG" "$BACKUP"; then
     echo "Não foi possível criar o backup $BACKUP; nenhum arquivo foi alterado." >&2
+    install_log 'error=backup_failed'
+    install_log 'installer_exit=1'
     exit 1
 fi
 
@@ -96,9 +110,12 @@ if [ "$PS2_STATUS" = "1" ]; then
     }
     ' "$ESCFG" > "$TMP_OUT"; then
         echo "Não foi possível localizar o bloco PS2; o backup foi preservado e nenhum arquivo foi alterado." >&2
+        install_log 'error=ps2_block_not_found'
+        install_log 'installer_exit=1'
         exit 1
     fi
     ACTION="migrado"
+    install_log "action=migrated backup=$BACKUP"
 else
     # Instalação inicial: insere o novo bloco antes de </systemList>.
     if ! awk -v blockfile="$TMP" '
@@ -110,20 +127,28 @@ else
     END { if (!done) exit 2 }
     ' "$ESCFG" > "$TMP_OUT"; then
         echo "Não foi possível localizar </systemList>; o backup foi preservado e nenhum arquivo foi alterado." >&2
+        install_log 'error=system_list_end_not_found'
+        install_log 'installer_exit=1'
         exit 1
     fi
     ACTION="instalado"
+    install_log "action=installed backup=$BACKUP"
 fi
 
 if ! $ESUDO cp "$TMP_OUT" "$ESCFG"; then
     echo "Não foi possível gravar $ESCFG; o backup $BACKUP foi preservado." >&2
+    install_log 'error=es_cfg_write_failed'
+    install_log 'installer_exit=1'
     exit 1
 fi
 if ! $ESUDO mkdir -p "$ROMDIR"; then
     echo "A entrada PS2 foi $ACTION, mas não foi possível criar $ROMDIR." >&2
+    install_log 'error=romdir_create_failed'
+    install_log 'installer_exit=1'
     exit 1
 fi
 
 echo "Sistema PS2 $ACTION. Backup: $BACKUP"
 echo "Coloque suas imagens legais em $ROMDIR e reinicie o EmulationStation."
+install_log 'installer_exit=0'
 exit 0
