@@ -4,28 +4,25 @@ Este é um port ARM64 experimental para portáteis RK3326 com ArkOS/dArkOS. Ele 
 
 O projeto não redistribui jogos, imagens de disco, BIOS proprietária ou firmware. A atribuição do código upstream e as licenças dos componentes estão em [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) e na pasta [`LICENSES/`](LICENSES/).
 
-## Download e instalação
+## Download e instalação offline
 
-Baixe `ps2-rk3326.zip` na página **Releases** deste repositório. A instalação recomendada é abrir o PortMaster no R36S/R36H e instalar o ZIP por sua interface. Também é possível extrair o conteúdo do ZIP no cartão, mantendo a pasta do port em `/roms/ports/ps2rk3326/`.
+Baixe `ps2-rk3326.zip` na página **Releases** deste repositório usando um computador ou celular. Depois copie o ZIP para o cartão microSD do R36S/R36H. O R36S não precisa ter Wi-Fi, conta PortMaster ou conexão de rede para instalar e executar este port.
 
-Depois da instalação, coloque suas próprias imagens de jogos legalmente obtidas em `/roms/ps2`. O launcher aceita `.iso`, `.chd`, `.cso` e `.cue/.bin`.
+Extraia o conteúdo do ZIP no cartão mantendo a pasta do port em `/roms/ports/ps2rk3326/`. O PortMaster é apenas uma forma opcional de organizar ports; este pacote também pode ser instalado manualmente por cópia no cartão.
 
-No menu principal, abra **Ports** e selecione **PS2-RK3326**. O launcher inicia diretamente a imagem selecionada pelo `retrorun` 64-bit do dArkOS quando ele está disponível; caso contrário, usa RetroArch como fallback.
+Depois, coloque suas próprias imagens de jogos legalmente obtidas em `/roms/ps2`. O launcher aceita `.iso`, `.chd`, `.cso` e `.cue/.bin`.
 
-## Categoria dedicada no menu
+## Instalação com um clique no menu
 
-Se quiser que os jogos apareçam em uma categoria separada **PlayStation 2**, execute uma vez por SSH, depois de instalar o port:
+Com o pacote extraído em `/roms/ports/ps2rk3326/`, abra **Ports** no menu principal e clique em **Install PS2 RK3326.sh**. Esse único arquivo SH executa localmente o instalador, cria `/roms/ps2`, faz backup de `/etc/emulationstation/es_systems.cfg`, adiciona a categoria **PlayStation 2** e reinicia o EmulationStation. Não é necessário SSH, Wi-Fi, conta do PortMaster ou download durante esse processo.
 
-```sh
-bash "/roms/ports/ps2rk3326/ps2rk3326/install_ps2_system.sh"
-sudo systemctl restart emulationstation
-```
+Depois do reinício, as imagens em `/roms/ps2` aparecerão na categoria **PlayStation 2**. Ao clicar em uma imagem, o EmulationStation passará o caminho dela ao `PS2-RK3326.sh`, que abrirá o retrorun/RetroArch já carregando o jogo diretamente.
 
-O instalador cria um backup datado de `/etc/emulationstation/es_systems.cfg`, não modifica DTB ou `boot.ini` e não reinstala o firmware. Para remover a categoria, restaure o backup correspondente e reinicie o EmulationStation.
+O instalador não modifica DTB ou `boot.ini` e não reinstala o firmware. Para remover a categoria, restaure o backup correspondente e reinicie o EmulationStation.
 
 ## Wi-Fi e downloads durante a execução
 
-O port não precisa de Wi-Fi para iniciar ou executar os jogos. Depois que o ZIP estiver no cartão e as imagens legais estiverem em `/roms/ps2`, não há download obrigatório durante a execução. O Wi-Fi só seria necessário para baixar o ZIP diretamente no aparelho ou para usar serviços externos do próprio sistema.
+O port não precisa de Wi-Fi para iniciar ou executar os jogos. Depois que o ZIP for baixado em outro dispositivo e copiado para o cartão, não há download obrigatório durante a instalação ou execução. O R36S pode permanecer completamente offline.
 
 Não é necessário copiar uma BIOS externa: o código-fonte upstream utilizado pelo core implementa uma camada HLE integrada. Isso não autoriza o uso de jogos ou arquivos que o usuário não tenha direito de utilizar.
 
@@ -49,7 +46,7 @@ O sandbox confirmou a compilação ARM64, o carregamento do core via QEMU, os ex
 
 | Arquivo | Função |
 |---|---|
-| `PS2-RK3326.sh` | Launcher PortMaster. |
+| `PS2-RK3326.sh` | Launcher local; também segue a convenção de Ports/PortMaster. |
 | `Install PS2 RK3326.sh` | Atalho para o instalador da categoria dedicada. |
 | `ps2rk3326/ps2rk3326_libretro.so` | Core ARM64 compilado para Cortex-A35/ARMv8-A. |
 | `ps2rk3326/install_ps2_system.sh` | Instalador opcional do EmulationStation. |
