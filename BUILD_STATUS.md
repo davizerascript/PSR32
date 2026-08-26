@@ -7,7 +7,7 @@
 
 Foi criado um port ARM64 de PlayStation 2 para Linux/RK3326, com launcher PortMaster, caminho prioritário pelo `retrorun` 64-bit do dArkOS e fallback direto para RetroArch. O port aceita imagens legais ISO, CHD, CSO, CUE/BIN e ELF homebrew; não inclui jogos comerciais, BIOS externa ou firmware proprietário.
 
-A categoria dedicada **PlayStation 2** é opcional. O instalador cria um backup datado de `es_systems.cfg`, insere uma entrada idempotente e cria `/roms/ps2`; nenhum DTB ou `boot.ini` é substituído.
+A categoria dedicada **PlayStation 2** é opcional. O instalador cria um backup datado de `es_systems.cfg`, insere uma entrada nova ou migra somente uma entrada `ps2` antiga sem `.elf`, preserva os demais sistemas e cria `/roms/ps2`; nenhum DTB ou `boot.ini` é substituído. Se a entrada já aceita ELF, a execução é idempotente e não cria duplicata.
 
 ## Testes realizados
 
@@ -21,7 +21,7 @@ A categoria dedicada **PlayStation 2** é opcional. O instalador cria um backup 
 | Launcher clicado sem argumento inicia o instalador local | OK |
 | Launcher registra código de erro do emulador em `log.txt` | OK |
 | Extração do ZIP no nível `/roms/ports/` e clique de instalação | OK |
-| Instalação XML com backup e idempotência | OK |
+| Instalação XML inicial, migração de entrada antiga, backup e idempotência | OK |
 | ZIP sem stub GLES ou arquivos de jogo | OK |
 | Core host com EGL/GLES Mesa e ELF homebrew MIT | OK — `cubes_demo`, `dungeon_game` e `console_demo` completaram 60 frames com exit 0 após a correção de VBlank; `play_adpcm_demo` carregou e produziu vídeo no primeiro frame |
 | GPU Mali-G31, KMS/DRM, áudio e controles físicos no R36S | Pendente |
@@ -33,7 +33,7 @@ O checkout [dArkOSRE-R36](https://github.com/southoz/dArkOSRE-R36) foi atualizad
 
 O próprio checkout não contém o binário final `retrorun`, o arquivo `retrorun.cfg` nem as bibliotecas EGL/GLES. Esses componentes são fornecidos pela imagem instalada no cartão e precisam ser verificados no aparelho. Consulte [`darkos-compatibility-audit.md`](darkos-compatibility-audit.md) para os detalhes e comandos de diagnóstico.
 
-Após um relato de clique sem abertura, o launcher foi corrigido para suportar dois caminhos: quando recebe uma imagem via `%ROM%`, encaminha-a ao retrorun; quando é clicado diretamente sem argumento, chama o instalador local. Também passou a retornar e registrar o código de saída do emulador. Nesta revisão, o log foi reforçado antes da chamada ao emulador com arquitetura, ROM, tamanho, core, dependências ELF detectáveis e variáveis SDL relevantes. O instalador agora registra `.elf` junto com ISO/CHD/CSO/CUE/BIN no `es_systems.cfg`, permitindo que homebrews como `dungeon_game.elf` apareçam na categoria PS2. O teste offline em um cartão simulado passou com o layout real: os scripts ficaram diretamente em `/roms/ports/`, o core permaneceu em `ps2rk3326/` e a categoria PS2 foi inserida com backup.
+Após um relato de clique sem abertura, o launcher foi corrigido para suportar dois caminhos: quando recebe uma imagem via `%ROM%`, encaminha-a ao retrorun; quando é clicado diretamente sem argumento, chama o instalador local. Também passou a retornar e registrar o código de saída do emulador. Nesta revisão, o log foi reforçado antes da chamada ao emulador com arquitetura, ROM, tamanho, core, dependências ELF detectáveis e variáveis SDL relevantes. O instalador agora registra `.elf` junto com ISO/CHD/CSO/CUE/BIN no `es_systems.cfg`, permitindo que homebrews como `dungeon_game.elf` apareçam na categoria PS2. Se o usuário já tiver uma entrada PS2 antiga, a nova revisão cria backup datado e substitui somente o bloco PS2 sem duplicar a categoria. O teste offline em um cartão simulado passou com o layout real: os scripts ficaram diretamente em `/roms/ports/`, o core permaneceu em `ps2rk3326/` e a categoria PS2 foi inserida ou migrada com backup.
 
 ## Limitações importantes
 

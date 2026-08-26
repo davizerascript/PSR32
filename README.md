@@ -16,9 +16,11 @@ Depois, coloque suas próprias imagens legalmente obtidas em `/roms/ps2`. O laun
 
 Com os dois scripts diretamente em `/roms/ports/`, abra **Ports** no menu principal e clique em **Install PS2 RK3326.sh**. Esse único arquivo SH executa localmente o instalador, cria `/roms/ps2`, faz backup de `/etc/emulationstation/es_systems.cfg`, adiciona a categoria **PlayStation 2** e reinicia o EmulationStation. Não é necessário SSH, Wi-Fi, conta do PortMaster ou download durante esse processo.
 
+Se você já instalou uma revisão anterior, apenas substitua os arquivos do port no cartão e clique novamente em **Install PS2 RK3326.sh**. O instalador detecta a entrada `ps2` antiga sem `.elf`, cria outro backup datado e migra somente esse bloco para a configuração nova, preservando os demais sistemas. Se a entrada já contém `.elf`, a execução é idempotente e não a duplica.
+
 Depois do reinício, as imagens em `/roms/ps2` aparecerão na categoria **PlayStation 2**. Ao clicar em uma imagem, o EmulationStation passará o caminho dela ao `PS2-RK3326.sh`, que abrirá o retrorun/RetroArch já carregando o jogo diretamente.
 
-O instalador não modifica DTB ou `boot.ini` e não reinstala o firmware. Para remover a categoria, restaure o backup correspondente e reinicie o EmulationStation.
+O instalador não modifica DTB ou `boot.ini` e não reinstala o firmware. Para remover a categoria, restaure o backup correspondente e reinicie o EmulationStation. A revisão anterior omitia `.elf` no XML; por isso, instalar o pacote novo e repetir o clique é necessário para atualizar uma entrada PS2 que já existia.
 
 ## Wi-Fi e downloads durante a execução
 
