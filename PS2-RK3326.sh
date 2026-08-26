@@ -99,14 +99,35 @@ if declare -F pm_platform_helper >/dev/null 2>&1; then
     pm_platform_helper "$PORTDIR/ps2rk3326_libretro.so" || true
 fi
 
-LOGFILE="$PORTDIR/log.txt"
-: > "$LOGFILE"
-exec > >(tee "$LOGFILE") 2>&1
-
 # retrorun is the ArkOS wrapper used by the stock systems. It preserves the
 # device's KMS/DRM setup, hotkeys, save paths and audio behavior. The fallback
 # is useful on dArkOS variants where retrorun is not installed.
 RETRORUN_BIN="${PLAY_RETRORUN-/usr/local/bin/retrorun}"
+LOGFILE="$PORTDIR/log.txt"
+: > "$LOGFILE"
+# Redirect directly to the SD-card log. This avoids a background `tee` process
+# and keeps diagnostics available even when the emulator returns to ES.
+exec >>"$LOGFILE" 2>&1
+printf '%s\n' '--- PS2-RK3326 launcher ---'
+if command -v date >/dev/null 2>&1; then date '+launcher_started=%Y-%m-%dT%H:%M:%S%z' || true; fi
+if command -v uname >/dev/null 2>&1; then uname -a || true; fi
+printf 'launcher_pid=%s\n' "$$"
+printf 'launcher_dir=%s\n' "$SCRIPT_DIR"
+printf 'rom_path=%s\n' "$ROM"
+if command -v stat >/dev/null 2>&1; then stat -c 'rom_size_bytes=%s' "$ROM" 2>/dev/null || true; fi
+printf 'core_path=%s\n' "$PORTDIR/ps2rk3326_libretro.so"
+printf 'retrorun_path=%s\n' "$RETRORUN_BIN"
+printf 'esudo=%s\n' "${ESUDO:-}"
+printf 'xdg_config_home=%s\n' "$XDG_CONFIG_HOME"
+printf 'sdl_videodriver=%s\n' "$SDL_VIDEODRIVER"
+printf 'sdl_video_egl_driver=%s\n' "$SDL_VIDEO_EGL_DRIVER"
+if command -v file >/dev/null 2>&1; then
+    file "$PORTDIR/ps2rk3326_libretro.so" 2>/dev/null || true
+    [ -e "$RETRORUN_BIN" ] && file "$RETRORUN_BIN" 2>/dev/null || true
+fi
+if command -v readelf >/dev/null 2>&1; then
+    readelf -d "$PORTDIR/ps2rk3326_libretro.so" 2>/dev/null | grep 'NEEDED' || true
+fi
 status=0
 if [ -x "$RETRORUN_BIN" ]; then
     ROMDIR="$(dirname "$ROM")"

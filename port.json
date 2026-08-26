@@ -21,10 +21,10 @@
         "porter": [
             "Manus"
         ],
-        "desc": "Port experimental de PlayStation 2 para ArkOS/dArkOS R36S/R36H, baseado em código-fonte open-source com BIOS HLE integrada.",
-        "desc_md": "Port ARM64 experimental para portáteis RK3326. Usa a interface libretro para que o ArkOS/dArkOS forneça vídeo, mapeamento de controles, áudio e integração de saves.",
+        "desc": "Port experimental de PlayStation 2 para ArkOS/dArkOS R36S/R36H, com core ARM64 que solicita OpenGL ES 3.1 e usa BIOS HLE integrada.",
+        "desc_md": "Port ARM64 experimental para portáteis RK3326. A revisão atual solicita OpenGL ES 3.1 e usa a interface libretro para que o ArkOS/dArkOS forneça vídeo, mapeamento de controles, áudio e integração de saves.",
         "inst": "Extraia o pacote diretamente em /roms/ports/, mantenha os dois scripts SH nesse nível e copie imagens legais de PS2 para /roms/ps2. Não são necessários BIOS externa, Wi-Fi, conta PortMaster ou SSH.",
-        "inst_md": "Extraia o pacote diretamente em `/roms/ports/` para que `PS2-RK3326.sh` e `Install PS2 RK3326.sh` apareçam nesse nível, mantendo a pasta `ps2rk3326/` ao lado deles. Copie imagens legais **ISO**, **CHD**, **CSO**, **CUE/BIN** para `/roms/ps2`. O core usa uma camada HLE integrada; não é necessário arquivo de BIOS PS2 externo.\n\nAbra **Ports** no R36S/dArkOS e clique em `Install PS2 RK3326.sh`. Ele executa localmente do cartão SD, cria `/roms/ps2`, faz um backup datado de `/etc/emulationstation/es_systems.cfg` e adiciona a categoria **PlayStation 2**. Não são necessários Wi-Fi, conta PortMaster ou SSH.",
+        "inst_md": "Extraia o pacote diretamente em `/roms/ports/` para que `PS2-RK3326.sh` e `Install PS2 RK3326.sh` apareçam nesse nível, mantendo a pasta `ps2rk3326/` ao lado deles. Copie imagens legais **ISO**, **CHD**, **CSO**, **CUE/BIN** para `/roms/ps2`. A revisão atual solicita OpenGL ES 3.1 e usa uma camada HLE integrada; não é necessário arquivo de BIOS PS2 externo.\n\nAbra **Ports** no R36S/dArkOS e clique em `Install PS2 RK3326.sh`. Ele executa localmente do cartão SD, cria `/roms/ps2`, faz um backup datado de `/etc/emulationstation/es_systems.cfg` e adiciona a categoria **PlayStation 2**. Não são necessários Wi-Fi, conta PortMaster ou SSH. Se um jogo voltar ao menu, copie `/roms/ports/ps2rk3326/log.txt` do cartão para diagnóstico.",
         "genres": [
             "emulator"
         ],

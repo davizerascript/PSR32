@@ -36,11 +36,15 @@ O launcher segue esse fluxo, exporta `SDL_VIDEO_EGL_DRIVER=libEGL.so`, preserva 
 
 O core usa o padrão libretro de controle compatível com DualShock 2: direcional, dois analógicos, Select, Start, Square, Triangle, Circle, Cross, L1/L2/L3 e R1/R2/R3. O dArkOS/PortMaster fornece o mapeamento SDL/udev da variante física. Se algum botão estiver invertido ou ausente, ajuste-o no menu de controles do RetroArch; não há um mapa físico universal porque existem várias revisões de R36S/R36H.
 
-## Desempenho e limitações
+## Revisão atual e diagnóstico da tela preta
 
-O perfil inicial usa resolução interna 1×, OpenGL ES 3 e apresentação ajustada à tela do portátil. O R36S/R36H não é uma plataforma oficialmente suportada pelo emulador upstream. Jak and Daxter pode apresentar lentidão, glitches gráficos, áudio irregular ou não iniciar; não existe promessa de taxa de quadros.
+O core da revisão atual foi recompilado para requisitar **OpenGL ES 3.1** (em vez de 3.2) ao frontend libretro. Essa mudança é direcionada ao perfil Mali-G31/RK3326, no qual a disponibilidade de GLES 3.1 é uma expectativa mais conservadora; os shaders do core já usam GLSL ES 3.00. O binário anterior foi observado no teste com Need for Speed Underground 2 ficando aproximadamente nove segundos em tela preta e retornando ao menu. A revisão atual é uma tentativa técnica de corrigir a inicialização do contexto; **não há afirmação de que NFSU2 esteja compatível ou rápido**.
 
-O sandbox confirmou a compilação ARM64, o carregamento do core via QEMU, os exports libretro, o launcher e o instalador XML. Ainda não foram medidos no aparelho físico FPS, frame pacing, áudio, temperatura, RAM, hotkeys, save states, compatibilidade de ISO/CHD ou desempenho 3D.
+O perfil inicial usa resolução interna 1×, OpenGL ES 3.1 e apresentação ajustada à tela do portátil. O R36S/R36H não é uma plataforma oficialmente suportada pelo emulador upstream. Jogos 3D pesados podem apresentar lentidão, glitches gráficos, áudio irregular ou não iniciar; não existe promessa de taxa de quadros.
+
+O sandbox confirmou a compilação ARM64, o carregamento de metadados do core via QEMU, a criação de um contexto EGL/GLES host para o teste de carregamento e os exports libretro, além do launcher e do instalador XML. Isso não substitui o teste no aparelho físico: ainda não foram medidos no R36S/R36H FPS, frame pacing, áudio, temperatura, RAM, hotkeys, save states, compatibilidade de ISO/CHD ou desempenho 3D.
+
+Se o jogo ainda retornar ao menu, abra **Ports** novamente e copie o arquivo `/roms/ports/ps2rk3326/log.txt` do cartão para um computador ou celular. O launcher agora registra a arquitetura, o caminho e o tamanho da ROM, o core, as dependências ELF detectáveis, os drivers SDL relevantes e `emulator_exit_status`; esse arquivo é indispensável para distinguir falha de glibc, biblioteca/contexto GLES, retrorun ou boot do jogo.
 
 ## Conteúdo
 
