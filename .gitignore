@@ -1,0 +1,9 @@
+# Dados gerados durante a execução local do port
+ps2rk3326/conf/
+ps2rk3326/log.txt
+*.tmp
+*.out
+
+# Artefatos locais de validação/build
+validate_package.sh
+create_assets.py

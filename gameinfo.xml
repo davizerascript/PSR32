@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gameList>
+  <game>
+    <path>./PS2-RK3326.sh</path>
+    <name>PS2-RK3326</name>
+    <desc>Emulador PlayStation 2 ARM64 experimental para R36S/R36H.</desc>
+    <rating>0.5</rating>
+    <releasedate>20260826T000000</releasedate>
+    <developer>Projeto open-source de emulação PS2</developer>
+    <publisher>Projeto open-source de emulação PS2</publisher>
+    <genre>Emulador</genre>
+    <players>1</players>
+  </game>
+</gameList>

@@ -1,0 +1,45 @@
+{
+    "version": 4,
+    "name": "ps2-rk3326.zip",
+    "items": [
+        "PS2-RK3326.sh",
+        "Install PS2 RK3326.sh",
+        "gameinfo.xml",
+        "screenshot.png",
+        "README.md",
+        "BUILD_INFO.md",
+        "BUILD_STATUS.md",
+        "darkos-compatibility-audit.md",
+        "LICENSE",
+        "THIRD_PARTY_NOTICES.md",
+        "LICENSES/",
+        "ps2rk3326/"
+    ],
+    "items_opt": [],
+    "attr": {
+        "title": "PS2-RK3326",
+        "porter": [
+            "Manus"
+        ],
+        "desc": "Port experimental de PlayStation 2 para ArkOS/dArkOS R36S/R36H, baseado em código-fonte open-source com BIOS HLE integrada.",
+        "desc_md": "Port ARM64 experimental para portáteis RK3326. Usa a interface libretro para que o ArkOS/dArkOS forneça vídeo, mapeamento de controles, áudio e integração de saves.",
+        "inst": "Copie imagens legais de discos PS2 para /roms/ps2. Não é necessária BIOS externa. Execute ps2rk3326/install_ps2_system.sh uma vez via SSH se quiser uma categoria PlayStation 2 dedicada no EmulationStation.",
+        "inst_md": "Copie imagens legais **ISO**, **CHD**, **CSO**, **CUE/BIN** para `/roms/ps2`. O core usa uma BIOS HLE integrada; portanto, não é necessário um arquivo de BIOS PS2 externo.\n\nPara adicionar uma categoria **PlayStation 2** ao menu principal do ArkOS/dArkOS, execute `ps2rk3326/install_ps2_system.sh` uma vez via SSH e reinicie o EmulationStation. O instalador cria um backup datado de `/etc/emulationstation/es_systems.cfg`.",
+        "genres": [
+            "emulator"
+        ],
+        "image": null,
+        "rtr": false,
+        "exp": true,
+        "runtime": [],
+        "store": [],
+        "availability": "free",
+        "reqs": [
+            "analog_2"
+        ],
+        "arch": [
+            "aarch64"
+        ],
+        "min_glibc": ""
+    }
+}
