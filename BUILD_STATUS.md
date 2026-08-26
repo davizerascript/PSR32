@@ -23,7 +23,7 @@ A categoria dedicada **PlayStation 2** é opcional. O instalador cria um backup 
 | Extração do ZIP no nível `/roms/ports/` e clique de instalação | OK |
 | Instalação XML inicial, migração de entrada antiga, backup e idempotência | OK |
 | ZIP sem stub GLES ou arquivos de jogo | OK |
-| Core host com EGL/GLES Mesa e ELF homebrew MIT | OK — `cubes_demo`, `dungeon_game` e `console_demo` completaram 60 frames com exit 0 após a correção de VBlank; `play_adpcm_demo` carregou e produziu vídeo no primeiro frame |
+| Core host com EGL/GLES Mesa e ELF homebrew MIT | OK — `cubes_demo`, `dungeon_game`, `console_demo` e `play_adpcm_demo` completaram 60 frames com exit 0 após a correção de VBlank; o ADPCM produziu 29.700 frames de áudio no callback host |
 | GPU Mali-G31, KMS/DRM, áudio e controles físicos no R36S | Pendente |
 | FPS e compatibilidade de jogos comerciais/3D no R36S | Pendente |
 
