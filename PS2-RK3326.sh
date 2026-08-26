@@ -109,28 +109,14 @@ if declare -F pm_platform_helper >/dev/null 2>&1; then
 fi
 
 # retrorun is the ArkOS wrapper used by the stock systems. It preserves the
-# device's KMS/DRM setup, hotkeys, save paths and audio behavior. ArkOS4Clone
-# ships its compatible binary under /opt/retrorun and needs its Quirks libs.
-if [ -n "${PLAY_RETRORUN+x}" ]; then
-    RETRORUN_BIN="$PLAY_RETRORUN"
-    RETRORUN_LIBS=""
-elif [ -x /opt/retrorun/retrorun ]; then
-    RETRORUN_BIN="/opt/retrorun/retrorun"
-    RETRORUN_LIBS="/home/ark/.quirks/libs/retrorun_libs/64"
-else
-    RETRORUN_BIN="/usr/local/bin/retrorun"
-    RETRORUN_LIBS=""
-fi
-if [ -n "$RETRORUN_LIBS" ] && [ -d "$RETRORUN_LIBS" ]; then
-    export LD_LIBRARY_PATH="$RETRORUN_LIBS${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-fi
+# device's KMS/DRM setup, hotkeys, save paths and audio behavior. The fallback
+# is useful on dArkOS variants where retrorun is not installed.
+RETRORUN_BIN="${PLAY_RETRORUN-/usr/local/bin/retrorun}"
 if command -v uname >/dev/null 2>&1; then uname -a || true; fi
 printf 'rom_path=%s\n' "$ROM"
 if command -v stat >/dev/null 2>&1; then stat -c 'rom_size_bytes=%s' "$ROM" 2>/dev/null || true; fi
 printf 'core_path=%s\n' "$PORTDIR/ps2rk3326_libretro.so"
 printf 'retrorun_path=%s\n' "$RETRORUN_BIN"
-printf 'retrorun_libs_path=%s\n' "${RETRORUN_LIBS:-}"
-printf 'ld_library_path=%s\n' "${LD_LIBRARY_PATH:-}"
 printf 'esudo=%s\n' "${ESUDO:-}"
 printf 'xdg_config_home=%s\n' "$XDG_CONFIG_HOME"
 printf 'sdl_videodriver=%s\n' "${SDL_VIDEODRIVER:-}"
