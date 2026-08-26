@@ -28,9 +28,16 @@ else
     ESUDO="${ESUDO-sudo}"
     sdl_controllerconfig="${SDL_GAMECONTROLLERCONFIG:-}"
 fi
-# Some control.txt files do not export ESUDO. Keep a safe default without
-# converting an intentionally empty ESUDO into the literal command `sudo`.
-ESUDO="${ESUDO-sudo}"
+# Some control.txt files do not export ESUDO. Use no privilege wrapper when
+# dArkOS already launched this script as root, while preserving an intentional
+# empty ESUDO for offline tests and PortMaster environments.
+if [ -z "${ESUDO+x}" ]; then
+    if [ "$(id -u)" -eq 0 ]; then
+        ESUDO=""
+    else
+        ESUDO="sudo"
+    fi
+fi
 
 ROM="${1:-}"
 if [ -z "$ROM" ]; then
@@ -100,6 +107,7 @@ exec > >(tee "$LOGFILE") 2>&1
 # device's KMS/DRM setup, hotkeys, save paths and audio behavior. The fallback
 # is useful on dArkOS variants where retrorun is not installed.
 RETRORUN_BIN="${PLAY_RETRORUN-/usr/local/bin/retrorun}"
+status=0
 if [ -x "$RETRORUN_BIN" ]; then
     ROMDIR="$(dirname "$ROM")"
     BIOSDIR="${ROMDIR%/*}/bios"
@@ -110,6 +118,7 @@ if [ -x "$RETRORUN_BIN" ]; then
         -s "$ROMDIR" \
         -d "$BIOSDIR" \
         "$PORTDIR/ps2rk3326_libretro.so" "$ROM"
+    status=$?
 else
     RETROARCH="${PLAY_RETROARCH-/usr/local/bin/retroarch}"
     [ -x "$RETROARCH" ] || RETROARCH="$(command -v retroarch || true)"
@@ -118,6 +127,11 @@ else
         exit 1
     fi
     $ESUDO "$RETROARCH" -L "$PORTDIR/ps2rk3326_libretro.so" "$ROM"
+    status=$?
+fi
+printf 'emulator_exit_status=%s\n' "$status"
+if [ "$status" -ne 0 ]; then
+    echo "O emulador terminou com erro. Consulte $LOGFILE." >&2
 fi
 
 if declare -F pm_finish >/dev/null 2>&1; then
@@ -126,4 +140,4 @@ fi
 if [ -w /dev/tty1 ]; then
     printf '\033c' >/dev/tty1 || true
 fi
-exit 0
+exit "$status"
