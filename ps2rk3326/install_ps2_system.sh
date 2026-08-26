@@ -28,13 +28,13 @@ cleanup() { rm -f "$TMP"; }
 trap cleanup EXIT
 
 # O comando usa aspas porque caminhos podem conter espaços. O EmulationStation
-# substitui %ROM% pelo caminho da imagem ISO/CHD/CSO selecionada.
+# substitui %ROM% pelo caminho da imagem ISO/CHD/CSO/ELF selecionada.
 cat > "$TMP" <<EOF
   <system>
     <name>ps2</name>
     <fullname>PlayStation 2</fullname>
     <path>$ROMDIR</path>
-    <extension>.iso .ISO .chd .CHD .cso .CSO .cue .CUE .bin .BIN</extension>
+    <extension>.iso .ISO .chd .CHD .cso .CSO .cue .CUE .bin .BIN .elf .ELF</extension>
     <command>$LAUNCHER &quot;%ROM%&quot;</command>
     <platform>ps2</platform>
     <theme>ps2</theme>

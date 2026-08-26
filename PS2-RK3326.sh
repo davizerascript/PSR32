@@ -49,7 +49,7 @@ if [ -z "$ROM" ]; then
         exec "$INSTALLER"
     fi
     echo "Port PS2-RK3326: selecione um jogo na categoria PlayStation 2." >&2
-    echo "Coloque imagens ISO, CHD ou CSO em /roms/ps2." >&2
+    echo "Coloque imagens ISO, CHD, CSO ou ELF homebrew em /roms/ps2." >&2
     exit 1
 fi
 if [ ! -f "$ROM" ]; then

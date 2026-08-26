@@ -10,7 +10,7 @@ Baixe `ps2-rk3326.zip` na página **Releases** deste repositório usando um comp
 
 Extraia o conteúdo do ZIP diretamente em `/roms/ports/` no cartão. Os arquivos `PS2-RK3326.sh` e `Install PS2 RK3326.sh` precisam ficar diretamente dentro de `/roms/ports/`; mantenha a subpasta `ps2rk3326/` ao lado deles. Não coloque os dois scripts dentro de uma segunda pasta, porque o EmulationStation do dArkOS procura os scripts de Ports nesse nível. O PortMaster é apenas uma forma opcional de organizar ports; este pacote também pode ser instalado manualmente por cópia no cartão.
 
-Depois, coloque suas próprias imagens de jogos legalmente obtidas em `/roms/ps2`. O launcher aceita `.iso`, `.chd`, `.cso` e `.cue/.bin`.
+Depois, coloque suas próprias imagens legalmente obtidas em `/roms/ps2`. O launcher aceita `.iso`, `.chd`, `.cso`, `.cue/.bin` e `.elf` (incluindo homebrews de PlayStation 2 como `dungeon_game.elf`). O instalador registra todas essas extensões no EmulationStation.
 
 ## Instalação com um clique no menu
 
