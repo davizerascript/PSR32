@@ -18,6 +18,9 @@ A categoria dedicada **PlayStation 2** é opcional. O instalador cria um backup 
 | Exports `retro_init`, `retro_run`, `retro_load_game` | OK |
 | Manifesto JSON, metadados XML e shell scripts | OK |
 | Launcher com retrorun e fallback RetroArch simulados | OK |
+| Launcher clicado sem argumento inicia o instalador local | OK |
+| Launcher registra código de erro do emulador em `log.txt` | OK |
+| Extração do ZIP no nível `/roms/ports/` e clique de instalação | OK |
 | Instalação XML com backup e idempotência | OK |
 | ZIP sem stub GLES ou arquivos de jogo | OK |
 | GPU Mali-G31, KMS/DRM, áudio e controles físicos | Pendente |
@@ -28,6 +31,8 @@ A categoria dedicada **PlayStation 2** é opcional. O instalador cria um backup 
 O checkout [dArkOSRE-R36](https://github.com/southoz/dArkOSRE-R36) foi atualizado e inspecionado. O snapshot de rootfs auditado informa `03082026`. Os arquivos confirmam Ports em `/roms/ports/*.sh`, wrappers oficiais com `/usr/local/bin/retrorun` e `/home/ark/.config/retrorun.cfg`, RetroArch 64-bit com driver `gl` e input `udev`, áudio `alsathread`, viewport 640×480 e seleção EGL via `SDL_VIDEO_EGL_DRIVER=libEGL.so`.
 
 O próprio checkout não contém o binário final `retrorun`, o arquivo `retrorun.cfg` nem as bibliotecas EGL/GLES. Esses componentes são fornecidos pela imagem instalada no cartão e precisam ser verificados no aparelho. Consulte [`darkos-compatibility-audit.md`](darkos-compatibility-audit.md) para os detalhes e comandos de diagnóstico.
+
+Após um relato de clique sem abertura, o launcher foi corrigido para suportar dois caminhos: quando recebe uma imagem via `%ROM%`, encaminha-a ao retrorun; quando é clicado diretamente sem argumento, chama o instalador local. Também passou a retornar e registrar o código de saída do emulador. O teste offline em um cartão simulado passou com o layout real: os scripts ficaram diretamente em `/roms/ports/`, o core permaneceu em `ps2rk3326/` e a categoria PS2 foi inserida com backup.
 
 ## Limitações importantes
 
