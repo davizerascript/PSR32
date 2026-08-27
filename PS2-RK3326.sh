@@ -33,10 +33,15 @@ else
 fi
 
 if [ -f "$controlfolder/control.txt" ]; then
+    # PortMaster helper files are sourced with nounset disabled because some
+    # dArkOS images leave optional fields (for example DEVICE_INFO_VERSION)
+    # undefined. A missing optional field must not abort the PS2 launcher.
+    set +u
     # shellcheck disable=SC1091
     source "$controlfolder/control.txt"
     [ -f "$controlfolder/device_info.txt" ] && source "$controlfolder/device_info.txt"
     [ -f "$controlfolder/mod_${CFW_NAME:-}.txt" ] && source "$controlfolder/mod_${CFW_NAME:-}.txt"
+    set -u
     get_controls 2>/dev/null || true
 else
     # The dArkOS wrappers run the emulator as the normal user. The outer
