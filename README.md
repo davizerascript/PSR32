@@ -1,6 +1,10 @@
-# Port experimental de PlayStation 2 para R36S/R36H
+# PSR32 — Port experimental de PlayStation 2 para R36S/R36H
 
-Este é um port ARM64 experimental para portáteis RK3326 com ArkOS/dArkOS. Ele é baseado no código-fonte de um emulador open-source de PlayStation 2, integrado ao frontend libretro para usar o vídeo, áudio, controles e hotkeys fornecidos pelo sistema.
+Este é o **PSR32**, um port ARM64 experimental para portáteis RK3326 com ArkOS/dArkOS. Ele é baseado no código-fonte de um emulador open-source de PlayStation 2, integrado ao frontend libretro para usar o vídeo, áudio, controles e hotkeys fornecidos pelo sistema.
+
+## Projeto e contato
+
+O nome do projeto é **PSR32**. Para acompanhar o projeto ou entrar em contato, visite o Instagram [@Melo._.071](https://www.instagram.com/Melo._.071/).
 
 O projeto não redistribui jogos, imagens de disco, BIOS proprietária ou firmware. A atribuição do código upstream e as licenças dos componentes estão em [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) e na pasta [`LICENSES/`](LICENSES/).
 
