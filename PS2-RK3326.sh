@@ -155,6 +155,11 @@ fi
 # device's KMS/DRM setup, hotkeys, save paths and audio behavior. The fallback
 # is useful on dArkOS variants where retrorun is not installed.
 RETRORUN_BIN="${PLAY_RETRORUN-/usr/local/bin/retrorun}"
+# Experimental-only configuration. The file is kept beside the core so this
+# build does not modify the user's global retrorun/RetroArch settings.
+PERF_CFG="$PORTDIR/psr32-performance-test.cfg"
+RETROARCH_CFG="$PORTDIR/psr32-retroarch-test.cfg"
+CORE_OPTIONS_CFG="$PORTDIR/psr32-core-options-test.cfg"
 if command -v uname >/dev/null 2>&1; then uname -a || true; fi
 printf 'rom_path=%s\n' "$ROM"
 if command -v stat >/dev/null 2>&1; then stat -c 'rom_size_bytes=%s' "$ROM" 2>/dev/null || true; fi
@@ -170,6 +175,10 @@ printf 'sdl_kmsdrm_orientation=%s\n' "${SDL_KMSDRM_ORIENTATION:-}"
 printf 'sdl_kmsdrm_rotation=%s\n' "${SDL_KMSDRM_ROTATION:-}"
 printf 'sdl_gamecontrollerconfig_bytes=%s\n' "${#SDL_GAMECONTROLLERCONFIG}"
 printf 'ps2_swap_shoulders=%s\n' "${PS2_SWAP_SHOULDERS:-1}"
+printf 'performance_test_config=%s\n' "$PERF_CFG"
+printf 'performance_target_fps=30\n'
+printf 'performance_resolution_factor=0.5x\n'
+printf 'performance_fps_counter=true\n'
 if command -v file >/dev/null 2>&1; then
     file "$PORTDIR/ps2rk3326_libretro.so" 2>/dev/null || true
     [ -e "$RETRORUN_BIN" ] && file "$RETRORUN_BIN" 2>/dev/null || true
@@ -183,7 +192,7 @@ if [ -x "$RETRORUN_BIN" ]; then
     BIOSDIR="${ROMDIR%/*}/bios"
     mkdir -p "$BIOSDIR" 2>/dev/null || true
     $ESUDO "$RETRORUN_BIN" \
-        -c /home/ark/.config/retrorun.cfg \
+        -c "${PERF_CFG:-/home/ark/.config/retrorun.cfg}" \
         --triggers \
         -s "$ROMDIR" \
         -d "$BIOSDIR" \
@@ -196,7 +205,11 @@ else
         echo "RetroArch/retrorun não foi encontrado no dArkOS." >&2
         exit 1
     fi
-    $ESUDO "$RETROARCH" -L "$PORTDIR/ps2rk3326_libretro.so" "$ROM"
+    if [ -f "$RETROARCH_CFG" ]; then
+        $ESUDO "$RETROARCH" -c "$RETROARCH_CFG" --appendconfig "$CORE_OPTIONS_CFG" -L "$PORTDIR/ps2rk3326_libretro.so" "$ROM"
+    else
+        $ESUDO "$RETROARCH" -L "$PORTDIR/ps2rk3326_libretro.so" "$ROM"
+    fi
     status=$?
 fi
 printf 'emulator_exit_status=%s\n' "$status"

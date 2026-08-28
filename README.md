@@ -42,6 +42,14 @@ O launcher segue esse fluxo, exporta `SDL_VIDEO_EGL_DRIVER=libEGL.so`, reconhece
 
 A release `v0.3.1` corrige a inversão relatada nos shoulders: L1 acionava L2, L2 acionava L1, R1 acionava R2 e R2 acionava R1. O launcher troca somente os rótulos semânticos SDL de cada lado, preservando esquerda/direita e os índices físicos. Baixe `PSR32-PS2-RK3326-shoulders-fixed-v0.3.1.zip` na página [Releases](../../releases). A troca fica ativa por padrão; use `PS2_SWAP_SHOULDERS=0` apenas se a imagem do sistema já apresentar o mapeamento correto.
 
+## Build experimental de desempenho — v0.2.0-test
+
+Esta variante é exclusivamente para teste. Ela usa `psr32-performance-test.cfg`, ativa o contador de FPS do retrorun, solicita `ps2.limitframerate = 30` e configura `renderer.opengl.resfactor = 0.5`. O launcher usa esse arquivo somente nesta build e não altera a configuração global do usuário.
+
+O contador de FPS depende do retrorun aceitar `retrorun_fps_counter = true`. O limite de 30 FPS depende de o core consumir a opção `ps2.limitframerate`. A escala principal usa `renderer.opengl.resfactor = 0.5`; `play_res_multi = 0.5x` fica como fallback para variantes do core. Se a imagem ignorar uma dessas opções, o emulador ainda pode iniciar, mas a tela ou o FPS podem permanecer no padrão.
+
+Para voltar à versão estável, restaure o launcher e a pasta `ps2rk3326/` da release anterior. Não sobrescreva o cartão sem backup e não remova seus jogos, saves ou BIOS.
+
 ## Controles
 
 O core usa o padrão libretro de controle compatível com DualShock 2: direcional, dois analógicos, Select, Start, Square, Triangle, Circle, Cross, L1/L2/L3 e R1/R2/R3. O launcher mantém o mapa GO-Super no pacote, sem depender de download do PortMaster. O core também registra callbacks, máscara de botões e valores dos quatro eixos no `log.txt`, o que permite saber se o problema está no frontend ou no mapeamento. O mapa é direcionado ao perfil físico confirmado no dArkOS; outras revisões de controle podem exigir ajuste no RetroArch.
