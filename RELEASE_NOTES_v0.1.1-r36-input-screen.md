@@ -12,9 +12,9 @@ O instalador continua offline, migra uma entrada PS2 antiga sem duplicar sistema
 
 ## Validação realizada
 
-Foram executados testes de sintaxe shell, inspeção ELF AArch64, conferência de ABI máxima GLIBC_2.36, teste do launcher com retrorun falso e DTB R36S simulado, além de instalação e migração idempotentes do XML do EmulationStation.
+Foram executados testes em um ambiente que simula o dArkOSRE: sintaxe shell, inspeção ELF AArch64, conferência de ABI máxima GLIBC_2.36, teste do launcher com retrorun falso e DTB R36S simulado, além de instalação e migração idempotentes do XML do EmulationStation. No R36S, o projeto já deu sinal de vida, indicando que o core iniciou no hardware.
 
-Esses testes não substituem a execução no R36S/R36H físico. Ainda não foram medidos FPS, frame pacing, áudio, temperatura, consumo de RAM, hotkeys, save states, compatibilidade de cada ISO ou desempenho 3D real. A revisão não promete que Need for Speed Underground 2 ou outros jogos pesados iniciarão ou terão velocidade jogável.
+Esse sinal de vida não certifica todos os jogos nem o desempenho 3D. Ainda dependem de confirmação específica FPS, frame pacing, áudio, temperatura, consumo de RAM, hotkeys, save states e compatibilidade de cada ISO. A revisão não promete que Need for Speed Underground 2 ou outros jogos pesados iniciarão ou terão velocidade jogável.
 
 ## Instalação
 
