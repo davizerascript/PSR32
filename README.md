@@ -63,7 +63,7 @@ Se o jogo ainda retornar ao menu, abra **Ports** novamente e copie o arquivo `/r
 | `port.json` e `gameinfo.xml` | Manifesto e metadados do PortMaster. |
 | `THIRD_PARTY_NOTICES.md` e `LICENSES/` | Atribuição e licenças. |
 
-Para diagnóstico de uma instalação que não inicia, veja [`darkos-compatibility-audit.md`](https://github.com/davizerascript/ps2-rk3326-port/blob/main/darkos-compatibility-audit.md) no repositório ou execute no R36:
+Para diagnóstico de uma instalação que não inicia, veja [`darkos-compatibility-audit.md`](https://github.com/davizerascript/PSR32/blob/main/darkos-compatibility-audit.md) no repositório ou execute no R36:
 
 ```sh
 ldd --version
