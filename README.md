@@ -38,6 +38,10 @@ A estrutura foi comparada diretamente com o snapshot `03082026` do projeto [dArk
 
 O launcher segue esse fluxo, exporta `SDL_VIDEO_EGL_DRIVER=libEGL.so`, reconhece os perfis DTB comuns do RK3326/R36 e deixa o retrorun/RetroArch escolher o backend SDL do firmware. Quando nenhum mapa externo é fornecido, ele usa um fallback offline comprovado para o GO-Super Gamepad: A=b1, B=b0, X=b2, Y=b3, D-pad=b8..b11, L1/R1=b4/b5, L2/R2=b6/b7, Select/Start=b12/b13, analógicos=a0..a3 e cliques L3/R3=b14/b15. A entrada PS2 gerada pelo instalador usa a mesma moldura oficial `sudo perfmax %GOVERNOR% %ROM%; nice -n -19 ...; sudo perfnorm`; o launcher não força `SDL_VIDEODRIVER`, KMSDRM, VSync ou uma placa DRM específica. O checkout do dArkOS não contém o binário retrorun nem as bibliotecas EGL/GLES da imagem final. Por isso, o mapa e o ambiente estão preparados para instalação offline, mas o carregamento final ainda deve ser confirmado no aparelho real, principalmente pela glibc e pelo contexto OpenGL ES 3.
 
+## Correção recente de controles — v0.3.1
+
+A release `v0.3.1` corrige a inversão relatada nos shoulders: L1 acionava L2, L2 acionava L1, R1 acionava R2 e R2 acionava R1. O launcher troca somente os rótulos semânticos SDL de cada lado, preservando esquerda/direita e os índices físicos. Baixe `PSR32-PS2-RK3326-shoulders-fixed-v0.3.1.zip` na página [Releases](../../releases). A troca fica ativa por padrão; use `PS2_SWAP_SHOULDERS=0` apenas se a imagem do sistema já apresentar o mapeamento correto.
+
 ## Controles
 
 O core usa o padrão libretro de controle compatível com DualShock 2: direcional, dois analógicos, Select, Start, Square, Triangle, Circle, Cross, L1/L2/L3 e R1/R2/R3. O launcher mantém o mapa GO-Super no pacote, sem depender de download do PortMaster. O core também registra callbacks, máscara de botões e valores dos quatro eixos no `log.txt`, o que permite saber se o problema está no frontend ou no mapeamento. O mapa é direcionado ao perfil físico confirmado no dArkOS; outras revisões de controle podem exigir ajuste no RetroArch.
