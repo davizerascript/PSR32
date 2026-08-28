@@ -37,12 +37,16 @@ if [ -f "$controlfolder/control.txt" ]; then
     # dArkOS images leave optional fields (for example DEVICE_INFO_VERSION)
     # undefined. A missing optional field must not abort the PS2 launcher.
     set +u
+    export controlfolder
     # shellcheck disable=SC1091
     source "$controlfolder/control.txt"
     [ -f "$controlfolder/device_info.txt" ] && source "$controlfolder/device_info.txt"
     [ -f "$controlfolder/mod_${CFW_NAME:-}.txt" ] && source "$controlfolder/mod_${CFW_NAME:-}.txt"
-    set -u
+    # PortMaster helpers may also reference optional unset fields.
     get_controls 2>/dev/null || true
+    ESUDO="${ESUDO-}"
+    sdl_controllerconfig="${sdl_controllerconfig:-${SDL_GAMECONTROLLERCONFIG:-}}"
+    set -u
 else
     # The dArkOS wrappers run the emulator as the normal user. The outer
     # EmulationStation command already handles perfmax/perfnorm privileges;
@@ -85,32 +89,61 @@ export XDG_DATA_HOME="$CONFDIR/data"
 export XDG_CACHE_HOME="$CONFDIR/cache"
 mkdir -p "$XDG_CONFIG_HOME" "$XDG_DATA_HOME" "$XDG_CACHE_HOME"
 
-export SDL_GAMECONTROLLERCONFIG="${sdl_controllerconfig:-${SDL_GAMECONTROLLERCONFIG:-}}"
+# Offline fallback copied from dArkOS es_input.cfg for the GO-Super Gamepad:
+# physical A=b1, B=b0, X=b2, Y=b3, D-pad=b8..b11, L1/R1=b4/b5,
+# L2/R2=b6/b7, Select/Start=b12/b13, sticks=a0..a3 and clicks=b14/b15.
+# A PortMaster/device-specific mapping wins when one is already supplied.
+if [ -z "${sdl_controllerconfig:-}" ]; then
+    sdl_controllerconfig="${SDL_GAMECONTROLLERCONFIG:-}"
+fi
+if [ -z "${sdl_controllerconfig:-}" ]; then
+    sdl_controllerconfig='190000004b4800000011000000010000,GO-Super Gamepad,a:b1,b:b0,x:b2,y:b3,back:b12,guide:b16,start:b13,dpleft:b10,dpdown:b9,dpright:b11,dpup:b8,leftshoulder:b4,lefttrigger:b6,rightshoulder:b5,righttrigger:b7,leftstick:b14,rightstick:b15,leftx:a0,lefty:a1,rightx:a2,righty:a3,platform:Linux,'
+fi
+export SDL_GAMECONTROLLERCONFIG="$sdl_controllerconfig"
 # Match dArkOS perfmax: select its system EGL library, but do not force an
 # SDL video backend. retrorun/RetroArch choose the backend for the firmware.
 export SDL_VIDEO_EGL_DRIVER=libEGL.so
-export SDL_AUDIODRIVER="${SDL_AUDIODRIVER:-alsa}"
+# Do not force an audio backend; dArkOS/retrorun selects its configured ALSA path.
 # Do not override KMSDRM card, double-buffer, VSync or joystick backend here;
 # those are firmware/frontend decisions and differ between R36 revisions.
 export PLAY_RES_FACTOR="${PLAY_RES_FACTOR:-1}"
 
 # Match the device profile used by dArkOS retrorun wrappers. Preserve a value
 # supplied by PortMaster or a device-specific mod when one already exists.
+DARKOS_BOOT_DIR="${PLAY_DARKOS_BOOT_DIR:-/boot}"
 if [ -z "${DEVICE_NAME:-}" ]; then
-    if [ -e /boot/rk3326-r33s-linux.dtb ] || [ -e /boot/rk3326-r35s-linux.dtb ] || \
-       [ -e /boot/rk3326-r36s-linux.dtb ] || [ -e /boot/rk3326-rg351mp-linux.dtb ] || \
-       [ -e /boot/rk3326-g80ca-linux.dtb ]; then
-        export DEVICE_NAME="RG351MP"
-    elif [ -e /boot/rk3326-odroidgo2-linux.dtb ] || [ -e /boot/rk3326-odroidgo3-linux.dtb ]; then
-        export DEVICE_NAME="RGB10"
+    if [ -e "$DARKOS_BOOT_DIR/rk3326-r33s-linux.dtb" ] || [ -e "$DARKOS_BOOT_DIR/rk3326-r35s-linux.dtb" ] || \
+       [ -e "$DARKOS_BOOT_DIR/rk3326-r36s-linux.dtb" ] || [ -e "$DARKOS_BOOT_DIR/rk3326-rg351mp-linux.dtb" ] || \
+       [ -e "$DARKOS_BOOT_DIR/rk3326-g80ca-linux.dtb" ]; then
+        DEVICE_NAME="RG351MP"
+    elif [ -e "$DARKOS_BOOT_DIR/rk3326-odroidgo2-linux.dtb" ] || [ -e "$DARKOS_BOOT_DIR/rk3326-odroidgo3-linux.dtb" ]; then
+        DEVICE_NAME="RGB10"
     else
-        export DEVICE_NAME="RG351P"
+        DEVICE_NAME="RG351P"
     fi
 fi
+# PortMaster's device_info.txt may assign DEVICE_NAME without exporting it.
+# retrorun-go2 needs the exported variable to select the RG351MP/R36 input
+# profile and the correct physical display rotation.
+export DEVICE_NAME
+
+# Some PortMaster control files provide an ESUDO wrapper that preserves a
+# whitelist of variables but omits DEVICE_NAME. retrorun-go2 needs this value
+# after sudo to select the RG351MP/R36 input and display profile.
+case "${ESUDO:-}" in
+    sudo*|*/sudo*)
+        case " ${ESUDO} " in
+            *"--preserve-env=DEVICE_NAME"*) ;;
+            *) ESUDO="${ESUDO} --preserve-env=DEVICE_NAME" ;;
+        esac
+        ;;
+esac
 
 # Let dArkOS apply its CPU governor, screen and suspend handling when available.
 if declare -F pm_platform_helper >/dev/null 2>&1; then
+    set +u
     pm_platform_helper "$PORTDIR/ps2rk3326_libretro.so" || true
+    set -u
 fi
 
 # retrorun is the ArkOS wrapper used by the stock systems. It preserves the
@@ -126,6 +159,13 @@ printf 'esudo=%s\n' "${ESUDO:-}"
 printf 'xdg_config_home=%s\n' "$XDG_CONFIG_HOME"
 printf 'sdl_videodriver=%s\n' "${SDL_VIDEODRIVER:-}"
 printf 'sdl_video_egl_driver=%s\n' "${SDL_VIDEO_EGL_DRIVER:-}"
+printf 'device_name=%s\n' "${DEVICE_NAME:-}"
+printf 'display_orientation=%s\n' "${DISPLAY_ORIENTATION:-}"
+printf 'sdl_kmsdrm_orientation=%s\n' "${SDL_KMSDRM_ORIENTATION:-}"
+printf 'sdl_kmsdrm_rotation=%s\n' "${SDL_KMSDRM_ROTATION:-}"
+printf 'sdl_gamecontrollerconfig_bytes=%s\n' "${#SDL_GAMECONTROLLERCONFIG}"
+printf 'input_mapping=%s\n' "${SDL_GAMECONTROLLERCONFIG%%,*}"
+printf 'display_policy=device_name:%s;resolution:640x480;rotation:firmware\n' "${DEVICE_NAME:-unknown}"
 if command -v file >/dev/null 2>&1; then
     file "$PORTDIR/ps2rk3326_libretro.so" 2>/dev/null || true
     [ -e "$RETRORUN_BIN" ] && file "$RETRORUN_BIN" 2>/dev/null || true
@@ -161,7 +201,9 @@ if [ "$status" -ne 0 ]; then
 fi
 
 if declare -F pm_finish >/dev/null 2>&1; then
-    pm_finish
+    set +u
+    pm_finish || true
+    set -u
 fi
 if [ -w /dev/tty1 ]; then
     printf '\033c' >/dev/tty1 || true

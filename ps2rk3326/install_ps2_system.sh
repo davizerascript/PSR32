@@ -39,7 +39,7 @@ cat > "$TMP" <<EOF
     <name>ps2</name>
     <fullname>PlayStation 2</fullname>
     <path>$ROMDIR</path>
-    <extension>.iso .ISO .chd .CHD .cso .CSO .cue .CUE .bin .BIN .elf .ELF</extension>
+    <extension>.iso .ISO .mds .MDS .isz .ISZ .chd .CHD .cso .CSO .cue .CUE .elf .ELF</extension>
     <command>sudo perfmax %GOVERNOR% %ROM%; nice -n -19 $LAUNCHER &quot;%ROM%&quot;; sudo perfnorm</command>
     <platform>ps2</platform>
     <theme>ps2</theme>
