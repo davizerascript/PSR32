@@ -44,9 +44,9 @@ A release `v0.3.1` corrige a inversão relatada nos shoulders: L1 acionava L2, L
 
 ## Build experimental de desempenho — v0.2.0-test
 
-Esta variante é exclusivamente para teste. Ela usa `psr32-performance-test.cfg`, ativa o contador de FPS do retrorun, solicita `ps2.limitframerate = 30` e configura `renderer.opengl.resfactor = 0.5`. O launcher usa esse arquivo somente nesta build e não altera a configuração global do usuário.
+A nova variante RGA-safe é exclusivamente para teste. Ela usa `psr32-performance-test.cfg`, ativa o contador de FPS do retrorun, solicita `ps2.limitframerate = 30` e configura `renderer.opengl.resfactor = 1.0` por padrão. O log físico mostrou `c_RkRgaBlit failed` com retângulo de origem de largura e altura zero; por isso a escala 0,5× não é aplicada automaticamente. O launcher usa esse arquivo somente nesta build e não altera a configuração global do usuário.
 
-O contador de FPS depende do retrorun aceitar `retrorun_fps_counter = true`. O limite de 30 FPS depende de o core consumir a opção `ps2.limitframerate`. A escala principal usa `renderer.opengl.resfactor = 0.5`; `play_res_multi = 0.5x` fica como fallback para variantes do core. Se a imagem ignorar uma dessas opções, o emulador ainda pode iniciar, mas a tela ou o FPS podem permanecer no padrão.
+A configuração 0,5× foi preservada em `psr32-performance-lowres-experimental.cfg` e só é selecionada com `PS2_USE_LOWRES=1`, para diagnóstico posterior. Ela não é recomendada no aparelho que apresentou a falha RGA. O contador de FPS depende do retrorun aceitar `retrorun_fps_counter = true`, e o limite de 30 FPS depende de o core consumir `ps2.limitframerate`.
 
 Para voltar à versão estável, restaure o launcher e a pasta `ps2rk3326/` da release anterior. Não sobrescreva o cartão sem backup e não remova seus jogos, saves ou BIOS.
 
@@ -71,6 +71,7 @@ Se o jogo ainda retornar ao menu, abra **Ports** novamente e copie o arquivo `/r
 | `PS2-RK3326.sh` | Launcher local; também segue a convenção de Ports/PortMaster. |
 | `Install PS2 RK3326.sh` | Atalho para o instalador da categoria dedicada. |
 | `ps2rk3326/ps2rk3326_libretro.so` | Core ARM64 compilado para Cortex-A35/ARMv8-A. |
+| `ps2rk3326/psr32-performance-lowres-experimental.cfg` | Perfil opcional 0,5×; não usar por padrão após a falha RGA. |
 | `ps2rk3326/install_ps2_system.sh` | Instalador opcional do EmulationStation. |
 | `port.json` e `gameinfo.xml` | Manifesto e metadados do PortMaster. |
 | `THIRD_PARTY_NOTICES.md` e `LICENSES/` | Atribuição e licenças. |

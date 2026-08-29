@@ -155,11 +155,21 @@ fi
 # device's KMS/DRM setup, hotkeys, save paths and audio behavior. The fallback
 # is useful on dArkOS variants where retrorun is not installed.
 RETRORUN_BIN="${PLAY_RETRORUN-/usr/local/bin/retrorun}"
-# Experimental-only configuration. The file is kept beside the core so this
-# build does not modify the user's global retrorun/RetroArch settings.
+# Experimental-only configurations. They are kept beside the core so this
+# build does not modify the user's global retrorun/RetroArch settings. The
+# RGA-safe profile is the default: the reported RGA error contained a source
+# rectangle with width=0 and height=0, so do not request the 0.5x framebuffer
+# until the firmware/core combination is known to handle it.
 PERF_CFG="$PORTDIR/psr32-performance-test.cfg"
+LOWRES_CFG="$PORTDIR/psr32-performance-lowres-experimental.cfg"
 RETROARCH_CFG="$PORTDIR/psr32-retroarch-test.cfg"
 CORE_OPTIONS_CFG="$PORTDIR/psr32-core-options-test.cfg"
+if [ "${PS2_USE_LOWRES:-0}" = "1" ] && [ -f "$LOWRES_CFG" ]; then
+    PERF_CFG="$LOWRES_CFG"
+    performance_resolution_factor='0.5x-experimental'
+else
+    performance_resolution_factor='1.0x-rga-safe'
+fi
 if command -v uname >/dev/null 2>&1; then uname -a || true; fi
 printf 'rom_path=%s\n' "$ROM"
 if command -v stat >/dev/null 2>&1; then stat -c 'rom_size_bytes=%s' "$ROM" 2>/dev/null || true; fi
@@ -177,8 +187,9 @@ printf 'sdl_gamecontrollerconfig_bytes=%s\n' "${#SDL_GAMECONTROLLERCONFIG}"
 printf 'ps2_swap_shoulders=%s\n' "${PS2_SWAP_SHOULDERS:-1}"
 printf 'performance_test_config=%s\n' "$PERF_CFG"
 printf 'performance_target_fps=30\n'
-printf 'performance_resolution_factor=0.5x\n'
+printf 'performance_resolution_factor=%s\n' "$performance_resolution_factor"
 printf 'performance_fps_counter=true\n'
+printf 'ps2_use_lowres=%s\n' "${PS2_USE_LOWRES:-0}"
 if command -v file >/dev/null 2>&1; then
     file "$PORTDIR/ps2rk3326_libretro.so" 2>/dev/null || true
     [ -e "$RETRORUN_BIN" ] && file "$RETRORUN_BIN" 2>/dev/null || true
